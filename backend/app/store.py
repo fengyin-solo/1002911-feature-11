@@ -6,14 +6,17 @@ from __future__ import annotations
 
 from typing import Any
 
+from app.operator_seed import build_operator_rows
 from app.seed import SEED_ROWS
 
 
 class Store:
     def __init__(self) -> None:
-        self._tables: dict[str, list[dict[str, Any]]] = {
-            name: [dict(row) for row in rows] for name, rows in SEED_ROWS.items()
-        }
+        # 作业人员要演示归属/复审流转，使用按当天动态生成的数据，覆盖脚手架里
+        # 无差别的占位样例；其余模块沿用 seed 里的示例。
+        tables = {name: [dict(row) for row in rows] for name, rows in SEED_ROWS.items()}
+        tables["operator"] = build_operator_rows()
+        self._tables: dict[str, list[dict[str, Any]]] = tables
 
     def module_names(self) -> list[str]:
         return sorted(self._tables)
@@ -31,11 +34,36 @@ class Store:
         modules: list[dict[str, object]] = []
         for name in self.module_names():
             rows = self.rows(name)
+            # 作业人员证书状态是 service 按复审结果/复审日期统一推导的，
+            # 看板也必须走同一口径，不能回头去读已经不落库的 pending/abnormal，
+            # 否则概览卡片会和人员台账、复审名单各说各话。
+            if name == "operator":
+                from app.services.operator import (
+                    STATUS_EXPIRING,
+                    STATUS_OVERDUE,
+                    derive_status,
+                )
+
+                def is_pending(row: dict[str, Any]) -> bool:
+                    return (not row.get("locked")) and derive_status(row) in (
+                        STATUS_EXPIRING,
+                        STATUS_OVERDUE,
+                    )
+
+                def is_abnormal(row: dict[str, Any]) -> bool:
+                    return derive_status(row) in (STATUS_EXPIRING, STATUS_OVERDUE)
+            else:
+                def is_pending(row: dict[str, Any]) -> bool:
+                    return bool(row.get("pending"))
+
+                def is_abnormal(row: dict[str, Any]) -> bool:
+                    return bool(row.get("abnormal"))
+
             modules.append({
                 "name": name,
                 "created": len(rows),
-                "pending": sum(1 for row in rows if row.get("pending")),
-                "abnormal": sum(1 for row in rows if row.get("abnormal")),
+                "pending": sum(1 for row in rows if is_pending(row)),
+                "abnormal": sum(1 for row in rows if is_abnormal(row)),
             })
         cards = [
             {"label": "业务模块", "value": len(modules)},
