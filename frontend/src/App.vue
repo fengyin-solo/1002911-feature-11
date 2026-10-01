@@ -11,7 +11,19 @@
     <main class="app-main">
       <header class="app-head">
         <span class="head-desc">面向锅炉、压力容器、电梯、起重机械与场内专用机动车辆等特种设备的注册登记、定期检验、维保监管与隐患排查的一体化安全管理后台。</span>
-        <span class="head-user">当前值班：{{ store.operator }} · {{ store.shiftLabel }}</span>
+        <span class="head-user">
+          <label class="identity-switch">
+            值班身份
+            <select :value="identityKey" @change="switchIdentity">
+              <option v-for="(item, index) in identityOptions" :key="`${item.name}-${item.unit}`" :value="index">
+                {{ item.name }} · {{ item.role }} · {{ item.unit }}
+              </option>
+            </select>
+          </label>
+          <span class="identity-badge" :class="{ viewer: store.isViewer }">
+            {{ store.operator }}（{{ store.role }}·{{ store.unit }}）
+          </span>
+        </span>
       </header>
       <RouterView />
     </main>
@@ -19,9 +31,26 @@
 </template>
 
 <script setup lang="ts">
-import { useSessionStore } from '@/stores/session'
+import { computed, ref } from 'vue'
+
+import { useSessionStore, IDENTITY_PRESETS } from '@/stores/session'
 
 const store = useSessionStore()
+
+const identityOptions = IDENTITY_PRESETS
+const identityKey = ref(
+  IDENTITY_PRESETS.findIndex(
+    (item) => item.name === store.operator && item.role === store.role && item.unit === store.unit,
+  ),
+)
+
+const currentIdentity = computed(() => identityOptions[identityKey.value] ?? identityOptions[0])
+
+function switchIdentity(event: Event) {
+  const index = Number((event.target as HTMLSelectElement).value)
+  identityKey.value = Number.isNaN(index) ? 0 : index
+  store.setIdentity(identityOptions[identityKey.value])
+}
 
 const navItems = [{ label: "运营概览", path: "/" }, { label: "使用登记", path: "/register" }, { label: "锅炉管理", path: "/boiler" }, { label: "压力容器", path: "/pressurevessel" }, { label: "压力管道", path: "/pipeline" }, { label: "电梯管理", path: "/elevator" }, { label: "起重机械", path: "/crane" }, { label: "场车管理", path: "/forklift" }, { label: "定期检验", path: "/inspection" }, { label: "维保记录", path: "/maintenance" }, { label: "隐患排查", path: "/hazard" }, { label: "事故管理", path: "/accident" }, { label: "作业人员", path: "/operator" }, { label: "培训考核", path: "/training" }, { label: "安全阀校验", path: "/safetyvalve" }, { label: "压力表检定", path: "/gauge" }, { label: "备件管理", path: "/sparepart" }, { label: "应急演练", path: "/emergency" }, { label: "能效监测", path: "/energyeff" }, { label: "档案管理", path: "/archive" }, { label: "维保合同", path: "/contract" }]
 </script>

@@ -76,3 +76,12 @@ npm run dev
   `backend/app/routers/<模块>.py`，业务规则在 `backend/app/services/<模块>.py`。
 - 列表接口统一返回 `{ items, total, page, size }`，动作接口统一返回 `{ ok, message }`。
 - 状态流转只允许在 `app/services` 里改，路由层不做业务判断。
+- 作业人员模块（`operator`）的写接口都要带操作人身份请求头：
+  `X-Operator-Name`、`X-Operator-Unit`（中文按 percent-encode 传输）与
+  `X-Operator-Role`（`admin` 证书管理员 / `viewer` 只读岗）。证书复审登记、
+  注销、人员调动只允许证件所属单位的证书管理员经办；跨单位代办须在
+  `operator_grant` 授权台账中持有「委托单位 + 受托单位 + 授权事项」三要素
+  齐备的有效授权，缺项当场驳回并在 `message` 中列明。人员台账与
+  `/api/operator/roster` 复审名单共用同一套证书状态口径
+  （持证有效 / 即将到期 / 逾期未复审 / 已过期 / 已注销），已过期、已注销
+  为终态，不再进入下一期复审名单。

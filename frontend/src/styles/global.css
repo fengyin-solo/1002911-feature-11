@@ -33,3 +33,33 @@ body { margin: 0; background: #f6f8fb; color: #1f2937; }
 .link { border: none; background: none; color: var(--brand); cursor: pointer; padding: 0; }
 .page-foot { display: flex; justify-content: space-between; margin-top: 8px; font-size: 12px; color: var(--muted); }
 .error-text { color: #b42318; }
+.identity-switch { display: inline-flex; align-items: center; gap: 6px; }
+.identity-switch select { padding: 3px 6px; border: 1px solid var(--border); border-radius: 6px; font-size: 12px; }
+.identity-badge { display: inline-block; margin-left: 10px; padding: 3px 10px; border-radius: 999px; background: #e8f0fe; color: #1f6feb; font-size: 12px; }
+.identity-badge.viewer { background: #f1f5f9; color: #475569; }
+.status-tag { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 12px; }
+.status-持证有效 { background: #e7f6ec; color: #1a7f37; }
+.status-即将到期 { background: #fff4e0; color: #b25e09; }
+.status-逾期未复审 { background: #fdeceb; color: #b42318; }
+.status-已过期 { background: #f3f4f6; color: #6b7280; }
+.status-已注销 { background: #f3f4f6; color: #6b7280; }
+.link[disabled] { color: #9aa4b2; cursor: not-allowed; }
+.link.danger { color: #b42318; }
+.unit-foreign { color: #b25e09; }
+.tabs { display: flex; gap: 8px; margin: 8px 0 12px; }
+.tab { padding: 6px 16px; border: 1px solid var(--border); border-radius: 6px 6px 0 0; background: #f1f5f9; cursor: pointer; font-size: 13px; }
+.tab.active { background: #fff; border-bottom-color: #fff; color: var(--brand); font-weight: 600; }
+.modal-mask { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.45); display: flex; align-items: center; justify-content: center; z-index: 20; }
+.modal { background: #fff; border-radius: 10px; width: 480px; max-width: calc(100vw - 32px); padding: 18px 20px; }
+.modal h3 { margin: 0 0 4px; font-size: 16px; }
+.modal .modal-sub { color: var(--muted); font-size: 12px; margin: 0 0 12px; }
+.modal .form-item { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
+.modal .form-item label { font-size: 12px; color: var(--muted); }
+.modal .form-item input, .modal .form-item select, .modal .form-item textarea { padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; }
+.modal-foot { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
+.history-panel { margin-top: 8px; }
+.history-panel h4 { font-size: 13px; margin: 8px 0 4px; }
+.history-panel table { font-size: 12px; }
+.notice-bar { background: #fff8eb; border: 1px solid #f5d49a; color: #8a5a00; border-radius: 8px; padding: 8px 12px; font-size: 12px; margin-bottom: 10px; }
+.notice-bar.viewer-only { background: #f1f5f9; border-color: #cbd5e1; color: #475569; }
+.subtle { color: var(--muted); font-size: 12px; }
